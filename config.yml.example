@@ -1,0 +1,16 @@
+app:
+  port: 8080
+  env : development
+database:
+  connection: postgres
+  host: localhost
+  name: auth_service
+  user: postgres
+  password: kali
+  port: 5432
+  max_idle_conns: 10
+  max_open_conns: 100
+  max_conn_lifetime: 0 #unlimited
+  max_conn_idle_time: 8 #8 hours
+jwt:
+  expires: 12
