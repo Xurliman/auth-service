@@ -2,10 +2,13 @@ package main
 
 import (
 	"github.com/Xurliman/auth-service/internal/config/config"
-	"log"
+	"github.com/Xurliman/auth-service/internal/constants"
+	"github.com/Xurliman/auth-service/pkg/log"
+	"go.uber.org/zap"
 )
 
 func main() {
 	cfg := config.Setup()
-	log.Print(cfg.Database.Name)
+	log.InitLogger(cfg.App.Env, constants.LogPath)
+	log.Info("Starting Auth Service", zap.String("some", "data"))
 }
