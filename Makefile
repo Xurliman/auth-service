@@ -1,5 +1,5 @@
 MIGRATION_PATH := database/migrations
-CONFIG_PATH := ./config.yml
+CONFIG_PATH := ./config.yaml
 
 #yq should be installed in your OS, see https://github.com/mikefarah/yq
 DB_CONNECTION := $(shell yq '.database.connection' $(CONFIG_PATH))

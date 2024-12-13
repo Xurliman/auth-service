@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/Xurliman/auth-service/internal/config/config"
 	"github.com/Xurliman/auth-service/internal/constants"
 	"github.com/Xurliman/auth-service/internal/server/app/interfaces"
 	"github.com/Xurliman/auth-service/internal/server/app/middlewares"
@@ -12,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -35,11 +37,16 @@ func (s *AuthService) Login(ctx *fiber.Ctx, request *requests.LoginRequest) erro
 		return json.Error(ctx, err, "ERR_LOGIN")
 	}
 
-	if s.checkPasswordHash(request.Password, user.Password) {
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
 		return json.ErrorUnauthorized(ctx, constants.ErrInvalidAuth)
 	}
 
-	expireHour, _ := time.ParseDuration(os.Getenv("JWT_EXPIRES") + "h")
+	cfg := config.Setup()
+	expireHour, err := time.ParseDuration(strconv.Itoa(cfg.JWT.Expires) + "h")
+	if err != nil {
+		return json.Error(ctx, err, "ERR_LOGIN")
+	}
+
 	expiresAt := time.Now().Add(expireHour)
 	token, err := s.generateToken(user.Id.String(), expiresAt.Unix())
 	if err != nil {
@@ -55,18 +62,17 @@ func (s *AuthService) Login(ctx *fiber.Ctx, request *requests.LoginRequest) erro
 	if err != nil {
 		return err
 	}
-
+	isSecure := cfg.App.Env == "production"
 	ctx.Cookie(&fiber.Cookie{
 		Name:        constants.SessionCookieName,
 		Value:       token,
 		Path:        "/",
 		Expires:     expiresAt,
-		Secure:      true,
+		Secure:      isSecure,
 		HTTPOnly:    true,
 		SameSite:    "Strict",
 		SessionOnly: false,
 	})
-
 	return json.Success(ctx, responses.AuthLoginTransformer(user, expiresAt.Unix()))
 }
 
@@ -104,9 +110,4 @@ func (s *AuthService) generateToken(userGUID string, expiresAt int64) (string, e
 	jwtSecret := os.Getenv("JWT_SECRET")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(jwtSecret))
-}
-
-func (s *AuthService) checkPasswordHash(password, hash string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
 }

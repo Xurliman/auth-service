@@ -2,7 +2,8 @@ package config
 
 import (
 	"github.com/Xurliman/auth-service/internal/constants"
-	"log"
+	"github.com/Xurliman/auth-service/pkg/log"
+	"go.uber.org/zap"
 	"sync"
 	"time"
 
@@ -16,8 +17,9 @@ type AppConfig struct {
 }
 
 type AppSettings struct {
-	Port int    `mapstructure:"port"`
-	Env  string `mapstructure:"env"`
+	Port  int    `mapstructure:"port"`
+	Env   string `mapstructure:"env"`
+	Debug bool   `mapstructure:"debug"`
 }
 
 type DatabaseSettings struct {
@@ -52,14 +54,13 @@ func Setup() *AppConfig {
 		setDefaults(v)
 
 		v.AutomaticEnv()
-
 		if err := v.ReadInConfig(); err != nil {
-			log.Fatalf("Error reading config file: %v", err)
+			log.Fatal("Error reading config file: %v", zap.Error(err))
 		}
 
 		config := &AppConfig{}
 		if err := v.Unmarshal(config); err != nil {
-			log.Fatalf("Error unmarshalling config: %v", err)
+			log.Fatal("Error unmarshalling config: %v", zap.Error(err))
 		}
 
 		instance = config
@@ -70,6 +71,7 @@ func Setup() *AppConfig {
 func setDefaults(v *viper.Viper) {
 	v.SetDefault("app.port", 8080)
 	v.SetDefault("app.env", "development")
+	v.SetDefault("app.debug", true)
 
 	v.SetDefault("database.connection", "postgres")
 	v.SetDefault("database.host", "localhost")

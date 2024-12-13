@@ -25,6 +25,10 @@ func InitLogger(environment string, logPath string) {
 	logger = initLogger(environment, logPath)
 }
 
+func GetSQLLogger(environment string) *zap.Logger {
+	return initLogger(environment, constants.SqlLogPath)
+}
+
 func Info(msg string, fields ...zap.Field) {
 	getLoggerWithSkip(1).Info(msg, fields...)
 }
