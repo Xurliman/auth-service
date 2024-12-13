@@ -8,6 +8,7 @@ database:
   user: postgres
   password: kali
   port: 5432
+  sslmode: disable
   max_idle_conns: 10
   max_open_conns: 100
   max_conn_lifetime: 0 #unlimited

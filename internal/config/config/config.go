@@ -27,6 +27,7 @@ type DatabaseSettings struct {
 	User            string        `mapstructure:"user"`
 	Password        string        `mapstructure:"password"`
 	Port            int           `mapstructure:"port"`
+	SSLMode         string        `mapstructure:"ssl_mode"`
 	MaxIdleConns    int           `mapstructure:"max_idle_conns"`
 	MaxOpenConns    int           `mapstructure:"max_open_conns"`
 	MaxConnLifetime time.Duration `mapstructure:"max_conn_lifetime"`
@@ -72,9 +73,9 @@ func setDefaults(v *viper.Viper) {
 
 	v.SetDefault("database.connection", "postgres")
 	v.SetDefault("database.host", "localhost")
-	v.SetDefault("database.name", "market")
-	v.SetDefault("database.user", "postgres")
-	v.SetDefault("database.password", "kali")
+	v.SetDefault("database.name", "dbname")
+	v.SetDefault("database.user", "dbuser")
+	v.SetDefault("database.password", "dbpassword")
 	v.SetDefault("database.port", 5432)
 	v.SetDefault("database.max_idle_conns", 10)
 	v.SetDefault("database.max_open_conns", 100)
