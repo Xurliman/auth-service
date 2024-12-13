@@ -15,6 +15,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/gofiber/fiber/v2 v2.52.5 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

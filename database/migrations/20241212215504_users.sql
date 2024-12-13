@@ -9,6 +9,7 @@
         name                varchar(255)            not null,
         email               varchar(120)     unique not null,
         password            varchar(120)            not null,
+        is_email_verified    boolean                           default false,
         created_at          timestamp                         default now(),
         updated_at          timestamp,
         deleted_at          timestamp

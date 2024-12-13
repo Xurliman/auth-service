@@ -1,4 +1,4 @@
-package dto
+package requests
 
 import (
 	"github.com/Xurliman/auth-service/internal/server/app/models"
@@ -15,22 +15,6 @@ func (r *LoginRequest) Validate() error {
 }
 
 func (r *LoginRequest) ToModel() models.User {
-	return models.User{
-		Email:    r.Email,
-		Password: r.Password,
-	}
-}
-
-type RegisterRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
-}
-
-func (r *RegisterRequest) Validate() error {
-	return validate.ExtractValidationError(r)
-}
-
-func (r *RegisterRequest) ToModel() models.User {
 	return models.User{
 		Email:    r.Email,
 		Password: r.Password,

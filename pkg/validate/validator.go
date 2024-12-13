@@ -9,6 +9,32 @@ import (
 	"strings"
 )
 
+type ErrorResponse struct {
+	Error       bool
+	FailedField string
+	Tag         string
+	Value       interface{}
+}
+
+func ExtractValidationErrors(req interface{}) (validationErrors []ErrorResponse) {
+	validate := validator.New()
+	errs := validate.Struct(req)
+	if errs != nil {
+		for _, err := range errs.(validator.ValidationErrors) {
+			var elem ErrorResponse
+
+			elem.FailedField = err.Field()
+			elem.Tag = err.Tag()
+			elem.Value = err.Value()
+			elem.Error = true
+
+			validationErrors = append(validationErrors, elem)
+		}
+	}
+
+	return validationErrors
+}
+
 func ExtractValidationError(req interface{}) error {
 	var message string
 	var v = validator.New()

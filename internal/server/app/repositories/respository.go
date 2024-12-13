@@ -1,7 +1,8 @@
-package repository
+package repositories
 
 import (
-	"cbs-backend/utils"
+	"github.com/Xurliman/auth-service/internal/database"
+	"github.com/Xurliman/auth-service/pkg/pagination"
 	"math"
 	"strings"
 
@@ -9,11 +10,9 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-var DB *gorm.DB
-
-func filterPaginate(modelName interface{}, pagination *utils.Pagination, clauses []clause.Expression) func(db *gorm.DB) *gorm.DB {
+func filterPaginate(modelName interface{}, pagination *pagination.Pagination, clauses []clause.Expression) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
-	DB.Model(modelName).Clauses(clauses...).Count(&totalRows)
+	database.GetDB().Model(modelName).Clauses(clauses...).Count(&totalRows)
 
 	pagination.TotalRows = totalRows
 	totalPages := int(math.Ceil(float64(totalRows) / float64(pagination.GetLimit())))

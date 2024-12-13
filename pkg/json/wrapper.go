@@ -1,8 +1,8 @@
 package json
 
 import (
-	"github.com/Xurliman/gopher-markt/pkg/log"
-	"github.com/Xurliman/gopher-markt/pkg/pagination"
+	"github.com/Xurliman/auth-service/pkg/log"
+	"github.com/Xurliman/auth-service/pkg/pagination"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
