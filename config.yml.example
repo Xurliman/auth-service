@@ -15,3 +15,10 @@ database:
   max_conn_idle_time: 8 #8 hours
 jwt:
   expires: 12
+  secret: secret
+mail:
+  host: smtp.example.server
+  port: 587
+  user: user
+  password: password
+  from: user@example.com

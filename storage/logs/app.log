@@ -4,3 +4,9 @@
 {"level":"info","time":"2024-12-14 21:19:31","caller":"user_handler.go:35","message":"✅ USER LIST"}
 {"level":"info","time":"2024-12-14 21:19:33","caller":"jwtware.go:69","message":"✅ SET USER AUTH"}
 {"level":"info","time":"2024-12-14 21:19:33","caller":"user_handler.go:53","message":"✅ USER GET ME"}
+{"level":"info","time":"2024-12-14 21:31:18","caller":"database.go:61","message":"Successfully connected to the database"}
+{"level":"info","time":"2024-12-14 21:45:34","caller":"database.go:61","message":"Successfully connected to the database"}
+{"level":"info","time":"2024-12-14 21:45:36","caller":"user_handler.go:24","message":"✅ USER CREATE"}
+{"level":"info","time":"2024-12-14 21:46:06","caller":"auth_handler.go:23","message":"✅ AUTH LOGIN"}
+{"level":"info","time":"2024-12-14 21:46:09","caller":"jwtware.go:68","message":"✅ SET USER AUTH"}
+{"level":"info","time":"2024-12-14 21:46:09","caller":"user_handler.go:42","message":"✅ USER SHOW"}

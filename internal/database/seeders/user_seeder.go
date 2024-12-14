@@ -13,10 +13,11 @@ type UserSeeder struct {
 func (s UserSeeder) Seed(db *gorm.DB) error {
 	users := []models.User{
 		{
-			Name:     "Khurliman",
-			Username: "admin",
-			Email:    "jumamuratovahurliman8@gmail.com",
-			Password: utils.HashPassword("123"),
+			Name:            "Khurliman",
+			Username:        "admin",
+			Email:           "jumamuratovahurliman8@gmail.com",
+			Password:        utils.HashPassword("123"),
+			IsEmailVerified: true,
 		},
 	}
 	repo := repositories.NewUserRepository(db)

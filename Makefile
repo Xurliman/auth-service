@@ -11,6 +11,10 @@ DB_PASSWORD := $(shell yq '.database.password' $(CONFIG_PATH))
 # database connection string (DSN)
 DSN := 'host=${DB_HOST} dbname=${DB_NAME} user=${DB_USER} password=${DB_PASSWORD}'
 
+.PHONY: run
+run:
+	go run ./cmd/server/main.go
+
 .PHONY: check-yq
 check-yq:
 	@if ! command -v yq &>/dev/null; then \
@@ -33,3 +37,12 @@ migration: check-yq
     		exit 1; \
 	fi
 	goose --dir ${MIGRATION_PATH} ${DB_CONNECTION} ${DSN} create $(name) sql
+
+.PHONY: seed
+seed:
+	go run ./cmd/server/main.go --seed
+
+.PHONY: install
+install:
+	go mod download
+	go mod tidy
