@@ -12,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
-	"os"
 	"strconv"
 	"time"
 )
@@ -35,6 +34,10 @@ func (s *AuthService) Login(ctx *fiber.Ctx, request *requests.LoginRequest) erro
 	user, err := s.repository.FindByEmail(request.Email)
 	if err != nil {
 		return json.Error(ctx, err, "ERR_LOGIN")
+	}
+
+	if !user.IsEmailVerified {
+		return json.Error(ctx, constants.ErrEmailNotVerified, "ERR_EMAIL_NOT_VERIFIED")
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
@@ -62,6 +65,7 @@ func (s *AuthService) Login(ctx *fiber.Ctx, request *requests.LoginRequest) erro
 	if err != nil {
 		return err
 	}
+
 	isSecure := cfg.App.Env == "production"
 	ctx.Cookie(&fiber.Cookie{
 		Name:        constants.SessionCookieName,
@@ -107,7 +111,27 @@ func (s *AuthService) generateToken(userGUID string, expiresAt int64) (string, e
 		},
 	}
 
-	jwtSecret := os.Getenv("JWT_SECRET")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(jwtSecret))
+	return token.SignedString(config.GetJWTSecret())
+}
+
+func (s *AuthService) VerifyEmail(ctx *fiber.Ctx, tokenString string) error {
+	token, err := jwt.ParseWithClaims(tokenString, &middlewares.JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return config.GetJWTSecret(), nil
+	})
+	if err != nil {
+		return json.Error(ctx, constants.ErrInvalidToken, "ERR_INVALID_TOKEN")
+	}
+
+	claims, ok := token.Claims.(*middlewares.JwtCustomClaims)
+	if !ok || !token.Valid || claims.ExpiresAt < time.Now().Unix() {
+		return json.ErrorUnauthorized(ctx, constants.ErrInvalidToken)
+	}
+
+	err = s.repository.MakeEmailVerified(claims.Issuer)
+	if err != nil {
+		return json.Error(ctx, err, "ERR_VERIFY_EMAIL")
+	}
+
+	return json.Success(ctx, "Now you can login")
 }

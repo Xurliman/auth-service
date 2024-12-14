@@ -2,10 +2,8 @@ package requests
 
 import (
 	"github.com/Xurliman/auth-service/internal/server/app/models"
-	"github.com/Xurliman/auth-service/pkg/log"
+	"github.com/Xurliman/auth-service/pkg/utils"
 	"github.com/Xurliman/auth-service/pkg/validate"
-	"go.uber.org/zap"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type StoreUserRequest struct {
@@ -24,7 +22,7 @@ func (r *StoreUserRequest) ToModel() models.User {
 		Name:     r.Name,
 		Username: r.Username,
 		Email:    r.Email,
-		Password: hashPassword(r.Password),
+		Password: utils.HashPassword(r.Password),
 	}
 }
 
@@ -44,15 +42,6 @@ func (r *UpdateUserRequest) ToModel() models.User {
 		Name:     r.Name,
 		Username: r.Username,
 		Email:    r.Email,
-		Password: hashPassword(r.Password),
+		Password: utils.HashPassword(r.Password),
 	}
-}
-
-func hashPassword(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		log.Warn("error hashing password", zap.Error(err))
-		return ""
-	}
-	return string(bytes)
 }

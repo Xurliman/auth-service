@@ -1,15 +1,14 @@
 package middlewares
 
 import (
+	"github.com/Xurliman/auth-service/internal/config/config"
 	"github.com/Xurliman/auth-service/internal/constants"
 	"github.com/Xurliman/auth-service/internal/server/app/repositories"
 	"github.com/Xurliman/auth-service/pkg/json"
 	"github.com/Xurliman/auth-service/pkg/log"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"os"
 	"time"
 )
 
@@ -29,7 +28,6 @@ func JwtMiddleware(db *gorm.DB) fiber.Handler {
 		ctx.Set("Strict-Transport-Security", "max-age=5184000")
 		ctx.Set("X-DNS-Prefetch-Control", "off")
 
-		log.Info("current", zap.String("route", ctx.Path()), zap.String("method", ctx.Method()))
 		for _, whiteList := range whiteListRoutes() {
 			if ctx.Method() == whiteList.Method && ctx.Path() == whiteList.UrlPath {
 				return ctx.Next()
@@ -42,7 +40,7 @@ func JwtMiddleware(db *gorm.DB) fiber.Handler {
 		}
 
 		jwtToken, err := jwt.ParseWithClaims(authorizationToken, &JwtCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET")), nil
+			return config.GetJWTSecret(), nil
 		})
 
 		if err != nil {
@@ -79,5 +77,6 @@ func whiteListRoutes() []SkipperRoutesData {
 	return []SkipperRoutesData{
 		{"POST", "/api/auth/login"},
 		{"POST", "/api/auth/register"},
+		{"GET", "/api/auth/verify-email"},
 	}
 }

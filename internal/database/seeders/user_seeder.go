@@ -3,9 +3,7 @@ package seeders
 import (
 	"github.com/Xurliman/auth-service/internal/server/app/models"
 	"github.com/Xurliman/auth-service/internal/server/app/repositories"
-	"github.com/Xurliman/auth-service/pkg/log"
-	"go.uber.org/zap"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/Xurliman/auth-service/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -15,10 +13,10 @@ type UserSeeder struct {
 func (s UserSeeder) Seed(db *gorm.DB) error {
 	users := []models.User{
 		{
-			Name:     "Admin",
+			Name:     "Khurliman",
 			Username: "admin",
-			Email:    "admin@example.com",
-			Password: hashPassword("123"),
+			Email:    "jumamuratovahurliman8@gmail.com",
+			Password: utils.HashPassword("123"),
 		},
 	}
 	repo := repositories.NewUserRepository(db)
@@ -29,13 +27,4 @@ func (s UserSeeder) Seed(db *gorm.DB) error {
 		}
 	}
 	return nil
-}
-
-func hashPassword(password string) string {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	if err != nil {
-		log.Warn("error hashing password", zap.Error(err))
-		return ""
-	}
-	return string(bytes)
 }

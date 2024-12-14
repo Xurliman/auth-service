@@ -19,6 +19,7 @@ func Setup(app *fiber.App) {
 	auth := apiRouter.Group("/auth")
 	auth.Post("/login", authHandler.Login)
 	auth.Post("/logout", authHandler.Logout)
+	auth.Get("/verify-email", authHandler.VerifyEmail)
 
 	userRepository := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepository)

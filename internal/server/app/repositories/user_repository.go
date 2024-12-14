@@ -57,7 +57,7 @@ func (r *UserRepository) GetAll(pagination pagination.Pagination) (*pagination.P
 
 func (r *UserRepository) Create(user models.User) (models.User, error) {
 	if err := r.db.Create(&user).Error; err != nil {
-		return user, err
+		return models.User{}, err
 	}
 	return user, nil
 }

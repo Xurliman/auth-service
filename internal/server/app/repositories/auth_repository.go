@@ -17,11 +17,23 @@ func NewAuthRepository(db *gorm.DB) interfaces.IAuthRepository {
 }
 
 func (r *AuthRepository) FindByEmail(email string) (user models.User, err error) {
-	if err = r.db.Model(&user).First(&user, "email = ?", email).Error; err != nil {
+	if err = r.db.First(&user, "email = ?", email).Error; err != nil {
 		return user, err
 	}
 
 	return user, nil
+}
+
+func (r *AuthRepository) MakeEmailVerified(email string) (err error) {
+	if err = r.db.
+		Model(&models.User{}).
+		Where("email = ?", email).
+		Update("is_email_verified", true).
+		Error; err != nil {
+		return err
+	}
+	
+	return nil
 }
 
 func (r *AuthRepository) AddSession(session models.UserSession) (models.UserSession, error) {

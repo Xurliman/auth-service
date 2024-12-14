@@ -2,14 +2,19 @@ package services
 
 import (
 	"errors"
+	"github.com/Xurliman/auth-service/internal/config/config"
 	"github.com/Xurliman/auth-service/internal/constants"
 	"github.com/Xurliman/auth-service/internal/server/app/interfaces"
+	"github.com/Xurliman/auth-service/internal/server/app/mail"
+	"github.com/Xurliman/auth-service/internal/server/app/middlewares"
 	"github.com/Xurliman/auth-service/internal/server/app/requests"
 	"github.com/Xurliman/auth-service/internal/server/app/responses"
 	"github.com/Xurliman/auth-service/pkg/json"
 	"github.com/Xurliman/auth-service/pkg/pagination"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
 	"gorm.io/gorm"
+	"time"
 )
 
 type UserService struct {
@@ -48,6 +53,14 @@ func (s *UserService) Add(ctx *fiber.Ctx, request *requests.StoreUserRequest) er
 	if s.repository.EmailExists(request.Email) {
 		return json.ErrorValidation(ctx, constants.ErrEmailExists)
 	}
+
+	token, err := s.generateEmailVerificationToken(request.Email)
+	if err != nil {
+		return json.Error(ctx, err, "ERR_GENERATING_EMAIL_VERIFICATION_TOKEN")
+	}
+
+	verificationUrl := ctx.BaseURL() + "/api/auth/verify-email?token=" + token
+	go mail.VerifyEmail(request.Email, verificationUrl)
 
 	user, err := s.repository.Create(request.ToModel())
 	if err != nil {
@@ -97,4 +110,17 @@ func (s *UserService) Delete(ctx *fiber.Ctx, id string) error {
 		return json.Error(ctx, err, "ERR_DELETE_USER")
 	}
 	return json.Success(ctx, fiber.Map{"id": id})
+}
+
+func (s *UserService) generateEmailVerificationToken(email string) (string, error) {
+	claims := middlewares.JwtCustomClaims{
+		Issuer: email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(config.GetJWTSecret())
 }

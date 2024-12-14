@@ -6,4 +6,5 @@ const (
 	LogPath           = "storage/logs/app.log"
 	SqlLogPath        = "storage/logs/sql.log"
 	SessionCookieName = "user_session"
+	HashingCost       = 10
 )

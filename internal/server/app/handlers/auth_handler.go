@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/Xurliman/auth-service/internal/constants"
 	"github.com/Xurliman/auth-service/internal/server/app/interfaces"
 	"github.com/Xurliman/auth-service/internal/server/app/requests"
 	"github.com/Xurliman/auth-service/pkg/json"
@@ -19,6 +20,7 @@ func NewAuthHandler(service interfaces.IAuthService) interfaces.IAuthHandler {
 }
 
 func (h *AuthHandler) Login(ctx *fiber.Ctx) error {
+	log.Info("✅ AUTH LOGIN")
 	request := new(requests.LoginRequest)
 	err := ctx.BodyParser(request)
 	if err != nil {
@@ -31,4 +33,13 @@ func (h *AuthHandler) Login(ctx *fiber.Ctx) error {
 func (h *AuthHandler) Logout(ctx *fiber.Ctx) error {
 	log.Info("✅ AUTH LOGOUT")
 	return h.service.Logout(ctx)
+}
+
+func (h *AuthHandler) VerifyEmail(ctx *fiber.Ctx) error {
+	tokenString := ctx.Query("token")
+	if tokenString == "" {
+		return json.Error(ctx, constants.ErrInvalidToken, "ERR_INVALID_REQUEST")
+	}
+
+	return h.service.VerifyEmail(ctx, tokenString)
 }
